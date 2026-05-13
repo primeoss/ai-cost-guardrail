@@ -1,0 +1,36 @@
+name: Production Release Automator
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Base
+        uses: actions/checkout@v4
+
+      - name: Setup Node runtime environment
+        uses: actions/setup-node@v4
+        with:
+          node-node-version: 24
+
+      - name: Build Clean Compressed Payloads
+        run: |
+          npm ci
+          npm run build
+
+      - name: Force Upstream Target Tags
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Force extract major version tag identifier (e.g., v1.2.3 -> v1)
+          MAJOR_VERSION=$(echo "${{ github.event.release.tag_name }}" | cut -d. -f1)
+          
+          git add dist/
+          git commit -m "chore: asset compilation deployment for ${{ github.event.release.tag_name }}" || true
+          
+          # Tag and forcefully move target flags forward 
+          git tag -f -a "$MAJOR_VERSION" -m "Moving pointer reference for major version release $MAJOR_VERSION"
+          git push -f origin "$MAJOR_VERSION"

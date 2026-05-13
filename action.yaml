@@ -1,0 +1,13 @@
+# action.yaml
+name: 'AI Cost Guardrail'
+description: 'Intercepts out-of-bounds GenAI costs and dynamically halts rogue CI workflows.'
+author: 'aniruddhnishad'
+inputs:
+  max_budget_usd:
+    description: 'The absolute maximum budget in USD allowed for this specific workflow step.'
+    required: true
+    default: '2.00'
+runs:
+  using: 'node24'
+  main: 'dist/proxy/index.js'
+  post: 'dist/post/index.js'

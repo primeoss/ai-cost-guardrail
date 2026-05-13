@@ -1,0 +1,32 @@
+{
+  "name": "ai-cost-guardrail",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "npx tsx src/proxy.ts",
+    "build": "node clean.js && npx ncc cache clean && ncc build src/proxy.ts -o dist/proxy && ncc build src/post.ts -m -o dist/post",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com-ani:primeoss/ai-cost-guardrail.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1",
+    "dotenv": "^17.4.2",
+    "http-mitm-proxy": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.7.0",
+    "@vercel/ncc": "^0.38.4",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}

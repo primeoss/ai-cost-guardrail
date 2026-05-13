@@ -1,0 +1,32 @@
+name: Test Action Harness
+on: [push]
+
+jobs:
+  validate-guardrail:
+    runs-on: ubuntu-latest
+    # CRITICAL: Grant permission to allow the runner to kill its own workflow run execution context
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Initialize Budget Circuit Breaker
+        uses: ./
+        with:
+          max_budget_usd: '0.01' # Set low to intentionally trigger the switch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Pass token into the runtime ecosystem
+
+      - name: Simulate High Volume LLM Call
+        run: |
+          curl https://api.openai.com/v1/chat/completions \
+            -k \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer sk-MockKey" \
+            -d '{
+              "model": "gpt-4o",
+              "max_tokens": 4000,
+              "messages": [{"role": "user", "content": "Generate a long essay please."}]
+            }'
